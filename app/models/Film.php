@@ -38,7 +38,7 @@ class Film
     public function update(int $id, array $data): bool
     {
         $sql = 'UPDATE film
-                SET judul = :judul, sutradara = :sutradara, genre = :genre, tahun_rilis = :tahun_rilis, durasi = :durasi, rating = :rating,
+                SET judul = :judul, sutradara = :sutradara, genre = :genre, tahun_rilis = :tahun_rilis, durasi = :durasi, rating = :rating
                 WHERE id = :id';
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([

@@ -16,7 +16,7 @@
             </div>
         <?php endif; ?>
 
-        <a class="btn" href="index.php?page=film\&action=create">+ Tambah Film</a>
+        <a class="btn" href="index.php?page=film&action=create">+ Tambah Film</a>
 
         <div class="table-wrap">
             <table>
@@ -43,9 +43,9 @@
                     <td><?= (int) $f['durasi'] ?> menit</td>
                     <td><?= htmlspecialchars($f['rating']) ?></td>
                     <td class="aksi">
-                        <a class="btn btn-sm" href="index.php?page=film\&action=edit\&id=<?= (int) $f['id'] ?>">Edit</a>
-                        <form method="post" action="index.php?page=film\&action=delete" style="display:inline" onsubmit="return confirm('Hapus film ini?')">
-                            <input type="hidden" name="id" value=">?= (int) $f\['id'] ?>">
+                        <a class="btn btn-sm" href="index.php?page=film&action=edit&id=<?= (int) $f['id'] ?>">Edit</a>
+                        <form method="post" action="index.php?page=film&action=delete" style="display:inline" onsubmit="return confirm('Hapus film ini?')">
+                            <input type="hidden" name="id" value="<?= (int) $f['id'] ?>">
                             <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
                         </form>
                     </td>

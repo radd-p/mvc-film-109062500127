@@ -2,69 +2,70 @@
 class FilmController
 {
     private const GENRE = [
-        'Aksi', 'Drama', 'Komedi', 'Horor', 'Romantis', 'Fiksi Ilmiah', 'Animasi', 'Dokumenter', 'Thriller'
+        'Aksi', 'Drama', 'Komedi', 'Horor', 'Romantis',
+        'Fiksi Ilmiah', 'Animasi', 'Dokumenter', 'Thriller'
     ];
 
     public function __construct(private Film $model) {}
 
-    public function index(): void 
+    public function index(): void
     {
         $films = $this->model->getAll();
         $flash = $this->pull('flash');
         require __DIR__ . '/../views/film/index.php';
     }
 
-    public function create(): void 
+    public function create(): void
     {
         $genreList = self::GENRE;
         $errors    = $this->pull('errors') ?? [];
         $old       = $this->pull('old') ?? [];
-        require __DIR__ . '/../views/film/index.php';
+        require __DIR__ . '/../views/film/create.php';
     }
 
-    public function store(): void 
+    public function store(): void
     {
         $this->requirePost();
         [$data, $errors] = $this->validateInput($_POST);
 
         if ($errors) {
             $_SESSION['errors'] = $errors;
-            $_SESSION['old'] = $old;
-            $thist->redirect('index.php?page=film&action=create');
+            $_SESSION['old']    = $data;
+            $this->redirect('index.php?page=film&action=create');
         }
 
         try {
             $this->model->insert($data);
-            $this->flas('success', 'Film berhasil ditambahkan.');
-        } catch(PDOException $e) {
+            $this->flash('success', 'Film berhasil ditambahkan.');
+        } catch (PDOException $e) {
             $this->flash('error', 'Gagal menyimpan data film.');
         }
         $this->redirect('index.php?page=film');
     }
 
-    public function edit(): void 
+    public function edit(): void
     {
         $id   = (int) ($_GET['id'] ?? 0);
         $film = $this->model->findById($id);
 
         if (!$film) {
             http_response_code(404);
-            exit('Data tidak ditemukan.');
+            exit('Data film tidak ditemukan.');
         }
 
-        $genrelist = self::GENRE;
+        $genreList = self::GENRE;
         $errors    = $this->pull('errors') ?? [];
         $old       = $this->pull('old') ?? $film;
         require __DIR__ . '/../views/film/edit.php';
-    } 
+    }
 
-    public function update(): void 
+    public function update(): void
     {
         $this->requirePost();
         $id = (int) ($_POST['id'] ?? 0);
 
         if (!$this->model->findById($id)) {
-            $this->flash('error', 'Data tidak ditemukan.');
+            $this->flash('error', 'Data film tidak ditemukan.');
             $this->redirect('index.php?page=film');
         }
 
@@ -72,20 +73,34 @@ class FilmController
 
         if ($errors) {
             $_SESSION['errors'] = $errors;
-            $_SESSION['old'] = $data;
-            $this-->redirect('index.php?page=film&action=edit&id=' . $id);
+            $_SESSION['old']    = $data;
+            $this->redirect('index.php?page=film&action=edit&id=' . $id);
         }
 
         try {
             $this->model->update($id, $data);
             $this->flash('success', 'Film berhasil diperbarui.');
         } catch (PDOException $e) {
-            $this->flash('error', 'Gagal memperbarui data film');
+            $this->flash('error', 'Gagal memperbarui data film.');
         }
         $this->redirect('index.php?page=film');
     }
 
-    /* ------------- helper ----------------- */
+    public function delete(): void
+    {
+        $this->requirePost();
+        $id = (int) ($_POST['id'] ?? 0);
+
+        try {
+            $this->model->delete($id);
+            $this->flash('success', 'Film berhasil dihapus.');
+        } catch (PDOException $e) {
+            $this->flash('error', 'Gagal menghapus data film.');
+        }
+        $this->redirect('index.php?page=film');
+    }
+
+    /* ---------- helper ---------- */
 
     private function validateInput(array $input): array
     {
@@ -136,7 +151,7 @@ class FilmController
         return [$data, $errors];
     }
 
-    private function requirePost(): void 
+    private function requirePost(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -144,14 +159,14 @@ class FilmController
         }
     }
 
-    private function flash(string $type, string $message): void 
+    private function flash(string $type, string $message): void
     {
         $_SESSION['flash'] = ['type' => $type, 'message' => $message];
     }
 
     private function pull(string $key): mixed
     {
-        $value =$_SESSION[$key] ?? null;
+        $value = $_SESSION[$key] ?? null;
         unset($_SESSION[$key]);
         return $value;
     }
@@ -162,4 +177,3 @@ class FilmController
         exit;
     }
 }
-?>
